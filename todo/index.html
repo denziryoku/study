@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Game Task Manager</title>
+</head>
+<body>
+
+    <h1>ゲーム開発タスク管理</h1>
+
+    <input type="text" id="taskInput">
+    <button id="addButton">追加</button>
+
+
+    <ul id="taskList"></ul>
+
+	<script>
+		//初期オブジェクト宣言、入力テキスト、追加ボタン、リスト
+	    const input = document.getElementById("taskInput");
+	    const button = document.getElementById("addButton");
+	    const list = document.getElementById("taskList");
+
+		//addbuttonを押したときの処理
+	    button.addEventListener("click", function() {
+	        const task = input.value;
+
+			//空の場合戻る
+	        if (task === "") {
+	            return;
+	        }
+
+			//list形式のitemを作成
+	        const item = document.createElement("li");
+
+			//tasktextの作成
+			const taskText = document.createElement("span");
+			taskText.textContent = task;
+
+			//checkboxの作成、挙動、itemに追加
+			const checkBox = document.createElement("input");
+			checkBox.type = "checkbox";
+
+
+			checkBox.addEventListener("change", function() {
+			    if (checkBox.checked) {
+			        taskText.style.textDecoration = "line-through";
+			    } else {
+			        taskText.style.textDecoration = "none";
+			    }
+			});
+
+			item.appendChild(checkBox);
+			
+
+			//tasktextをitemに追加
+	        item.appendChild(taskText);
+			
+
+			//deletebuttonの作成、挙動、itemに追加
+	        const deleteButton = document.createElement("button");
+			deleteButton.textContent = "削除";
+
+			deleteButton.addEventListener("click", function() {
+			    item.remove();
+			});
+
+			item.appendChild(deleteButton);
+			
+			
+			//itemをlistに追加
+	        list.appendChild(item);
+
+
+			//入力欄の初期化
+	        input.value = "";
+	    });
+	</script>
+
+</body>
+</html>
