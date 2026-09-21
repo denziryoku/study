@@ -19,28 +19,23 @@
 	    const input = document.getElementById("taskInput");
 	    const button = document.getElementById("addButton");
 	    const list = document.getElementById("taskList");
+		//配列の作成、localstorageにリストあるなら読み込み
+		const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
 
-		//addbuttonを押したときの処理
-	    button.addEventListener("click", function() {
-	        const task = input.value;
-
-			//空の場合戻る
-	        if (task === "") {
-	            return;
-	        }
-
+		//itemにtaskを追加する関数
+		function addTaskToScreen(task) {
 			//list形式のitemを作成
 	        const item = document.createElement("li");
 
 			//tasktextの作成
 			const taskText = document.createElement("span");
 			taskText.textContent = task;
-
-			//checkboxの作成、挙動、itemに追加
+		
+			//checkboxの作成
 			const checkBox = document.createElement("input");
 			checkBox.type = "checkbox";
 
-
+			//checkboxの挙動
 			checkBox.addEventListener("change", function() {
 			    if (checkBox.checked) {
 			        taskText.style.textDecoration = "line-through";
@@ -48,32 +43,60 @@
 			        taskText.style.textDecoration = "none";
 			    }
 			});
-
-			item.appendChild(checkBox);
-			
-
-			//tasktextをitemに追加
-	        item.appendChild(taskText);
-			
-
-			//deletebuttonの作成、挙動、itemに追加
+		
+			//deletebuttonの作成
 	        const deleteButton = document.createElement("button");
 			deleteButton.textContent = "削除";
 
+			//deletebuttonの挙動
 			deleteButton.addEventListener("click", function() {
 			    item.remove();
 			});
 
+
+			//checkbox、tasktext、deletebuttonをitemに追加
+			item.appendChild(checkBox);
+			item.appendChild(taskText);
 			item.appendChild(deleteButton);
-			
 			
 			//itemをlistに追加
 	        list.appendChild(item);
 
+		
+		}
 
+
+		//addbuttonを押したときの処理
+	    button.addEventListener("click", function() {
+			//taskで文字の受け取り
+	        const task = input.value;
+	        
+
+			//空の場合戻る
+	        if (task === "") {
+	            return;
+	        }
+
+	        //配列への追加
+	        tasks.push(task);
+	        
+	        //localstorageへの追加
+	        localStorage.setItem("tasks", JSON.stringify(tasks));
+	        
+			//itemにtaskを追加する関数
+			addTaskToScreen(task);
+			
+			
 			//入力欄の初期化
 	        input.value = "";
 	    });
+	    
+	    //保存されたリストの読み込み
+		tasks.forEach(function(task) {
+			addTaskToScreen(task);
+		});
+		
+
 	</script>
 
 </body>
