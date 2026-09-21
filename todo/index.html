@@ -23,25 +23,36 @@
 		const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
 
 		//itemにtaskを追加する関数
-		function addTaskToScreen(task) {
+		function addTaskToScreen(taskData) {
 			//list形式のitemを作成
 	        const item = document.createElement("li");
 
 			//tasktextの作成
 			const taskText = document.createElement("span");
-			taskText.textContent = task;
+			taskText.textContent = taskData.text;
 		
 			//checkboxの作成
 			const checkBox = document.createElement("input");
 			checkBox.type = "checkbox";
+			//checkboxの状態初期化
+			checkBox.checked = taskData.completed;
+			if (checkBox.checked) {
+			        taskText.style.textDecoration = "line-through";
+			}
 
 			//checkboxの挙動
 			checkBox.addEventListener("change", function() {
+				//taskdataの更新
+				taskData.completed = checkBox.checked;
+
 			    if (checkBox.checked) {
 			        taskText.style.textDecoration = "line-through";
 			    } else {
 			        taskText.style.textDecoration = "none";
 			    }
+
+				//localstorage更新
+				localStorage.setItem("tasks", JSON.stringify(tasks));
 			});
 		
 			//deletebuttonの作成
@@ -51,7 +62,7 @@
 			//deletebuttonの挙動
 			deleteButton.addEventListener("click", function() {
 				//indexの取得
-				const index = tasks.indexOf(task);
+				const index = tasks.indexOf(taskData);
 				
 				//indexあればtasksから削除
 				if (index !== -1) {
@@ -82,22 +93,26 @@
 	    button.addEventListener("click", function() {
 			//taskで文字の受け取り
 	        const task = input.value;
-	        
 
 			//空の場合戻る
 	        if (task === "") {
 	            return;
 	        }
 
-	        //配列への追加
-	        tasks.push(task);
-	        
-	        //localstorageへの追加
-	        localStorage.setItem("tasks", JSON.stringify(tasks));
-	        
-			//itemにtaskを追加する関数
-			addTaskToScreen(task);
+			//taskDataの作成
+			const taskData = {
+				text: task,
+				completed: false
+			};
+
+			//配列への追加
+			tasks.push(taskData);
 			
+			//localstorageへの保存
+			localStorage.setItem("tasks", JSON.stringify(tasks));
+			
+			//itemにtaskを追加する関数
+			addTaskToScreen(taskData);
 			
 			//入力欄の初期化
 	        input.value = "";
