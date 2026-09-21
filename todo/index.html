@@ -50,7 +50,19 @@
 
 			//deletebuttonの挙動
 			deleteButton.addEventListener("click", function() {
-			    item.remove();
+				//indexの取得
+				const index = tasks.indexOf(task);
+				
+				//indexあればtasksから削除
+				if (index !== -1) {
+					tasks.splice(index, 1);
+				}
+				
+				//tasksの状態をlocalstorageに保存
+				localStorage.setItem("tasks", JSON.stringify(tasks));
+				
+				//表示からも削除
+				item.remove();
 			});
 
 
