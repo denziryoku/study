@@ -10,6 +10,7 @@
 
     <input type="text" id="taskInput">
     <button id="addButton">追加</button>
+	<button id="sortButton">優先度順</button>
 
 
     <ul id="taskList"></ul>
@@ -34,22 +35,29 @@
 			//checkboxの作成
 			const checkBox = document.createElement("input");
 			checkBox.type = "checkbox";
+
 			//checkboxの状態初期化
 			checkBox.checked = taskData.completed;
-			if (checkBox.checked) {
-			        taskText.style.textDecoration = "line-through";
+
+			//checkboxの状態によりテキストの表示を変える関数
+			function updateTaskDisplay() {
+				if (checkBox.checked) {
+					taskText.style.textDecoration = "line-through";
+				} else {
+					taskText.style.textDecoration = "none";
+				}
 			}
+
+			//初期checkboxの状態をテキストに反映
+			updateTaskDisplay();
 
 			//checkboxの挙動
 			checkBox.addEventListener("change", function() {
 				//taskdataの更新
 				taskData.completed = checkBox.checked;
 
-			    if (checkBox.checked) {
-			        taskText.style.textDecoration = "line-through";
-			    } else {
-			        taskText.style.textDecoration = "none";
-			    }
+				//checkboxの状態をテキストにも反映
+				updateTaskDisplay();
 
 				//localstorage更新
 				localStorage.setItem("tasks", JSON.stringify(tasks));
@@ -76,18 +84,55 @@
 				item.remove();
 			});
 
+			/*priority*/
+			//priorityの作成
+			const prioritySelect = document.createElement("select");
+
+			//optionの作成
+			const highOption = document.createElement("option");
+			highOption.value = 3;
+			highOption.textContent = "高";
+
+			const middleOption = document.createElement("option");
+			middleOption.value = 2;
+			middleOption.textContent = "中";
+
+			const lowOption = document.createElement("option");
+			lowOption.value = 1;
+			lowOption.textContent = "低";
+
+			//priorityselectにoptionの追加
+			prioritySelect.appendChild(highOption);
+			prioritySelect.appendChild(middleOption);
+			prioritySelect.appendChild(lowOption);
+
+			//taskdataのpriorityをpriorityselectに入れる
+			prioritySelect.value = taskData.priority;
+
+			prioritySelect.addEventListener("change", function() {
+				taskData.priority = prioritySelect.value;
+
+				localStorage.setItem("tasks", JSON.stringify(tasks));
+			});
+
 
 			//checkbox、tasktext、deletebuttonをitemに追加
 			item.appendChild(checkBox);
+			item.appendChild(prioritySelect);
 			item.appendChild(taskText);
 			item.appendChild(deleteButton);
 			
 			//itemをlistに追加
 	        list.appendChild(item);
-
 		
 		}
 
+		// Enterキーを押したときの処理
+		input.addEventListener("keydown", function(event) {
+			if (event.key === "Enter") {
+				button.click();
+			}
+		});
 
 		//addbuttonを押したときの処理
 	    button.addEventListener("click", function() {
@@ -102,7 +147,8 @@
 			//taskDataの作成
 			const taskData = {
 				text: task,
-				completed: false
+				completed: false,
+				priority: 1
 			};
 
 			//配列への追加
@@ -111,7 +157,7 @@
 			//localstorageへの保存
 			localStorage.setItem("tasks", JSON.stringify(tasks));
 			
-			//itemにtaskを追加する関数
+			//taskDataを表示する関数
 			addTaskToScreen(taskData);
 			
 			//入力欄の初期化
@@ -122,7 +168,27 @@
 		tasks.forEach(function(task) {
 			addTaskToScreen(task);
 		});
-		
+
+		/*優先順位並び替え*/
+		const sortButton = document.getElementById("sortButton");
+
+		sortButton.addEventListener("click", function() {
+			//データを並び直す処理
+			tasks.sort(function(a, b) {
+				return b.priority - a.priority;
+			});
+			localStorage.setItem("tasks", JSON.stringify(tasks));
+
+			// 画面を一旦空にする
+			list.innerHTML = "";			
+
+			// 画面を並び直す処理
+			tasks.forEach(function(task) {
+				addTaskToScreen(task);
+			});
+		});
+
+
 
 	</script>
 
