@@ -3,6 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <title>Game Task Manager</title>
+
+    <style>
+        .task-text {
+            display: inline-block;
+            width: 200px;
+        }
+    </style>	
 </head>
 <body>
 
@@ -31,6 +38,7 @@
 			//tasktextの作成
 			const taskText = document.createElement("span");
 			taskText.textContent = taskData.text;
+			taskText.className = "task-text";
 		
 			//checkboxの作成
 			const checkBox = document.createElement("input");
@@ -120,6 +128,7 @@
 			item.appendChild(checkBox);
 			item.appendChild(prioritySelect);
 			item.appendChild(taskText);
+//			taskText.style.marginRight = "100px";
 			item.appendChild(deleteButton);
 			
 			//itemをlistに追加
