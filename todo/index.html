@@ -17,8 +17,11 @@
 
     <input type="text" id="taskInput">
     <button id="addButton">追加</button>
+	<br>
+    <input type="text" id="searchInput">
+	<button id="searchButton">検索</button>
+	<br>
 	<button id="sortButton">優先度順</button>
-
 
     <ul id="taskList"></ul>
 
@@ -212,7 +215,6 @@
 
 		/*優先順位並び替え*/
 		const sortButton = document.getElementById("sortButton");
-
 		sortButton.addEventListener("click", function() {
 			//データを並び直す処理
 			tasks.sort(function(a, b) {
@@ -228,6 +230,21 @@
 				addTaskToScreen(task);
 			});
 		});
+
+		//searchbuttonを押したときの処理
+	    const searchInput = document.getElementById("searchInput");
+		const searchButton = document.getElementById("searchButton");
+	    searchButton.addEventListener("click", function() {
+			// 画面を一旦空にする
+			list.innerHTML = "";
+
+			tasks.forEach(function(task) {
+				if(task.text.includes(searchInput.value)){
+					// 描画
+					addTaskToScreen(task);
+				}
+			});
+	    });
 
 
 
