@@ -232,12 +232,20 @@
 		//描画のし直し、条件付き（condition）
 		function renderTasks(condition){
 			list.innerHTML = "";
-
+/*
 			tasks.forEach(function(task) {
 				if(condition(task)){
 					// 描画
 					addTaskToScreen(task);
 				}
+			});
+*/
+			const result = tasks.filter(function(task) {
+				return condition(task);
+			});
+
+			result.forEach(function(resultTask) {
+					addTaskToScreen(resultTask);
 			});
 
 		}
