@@ -123,12 +123,44 @@
 				localStorage.setItem("tasks", JSON.stringify(tasks));
 			});
 
+			//editbuttonの作成
+	        const editButton = document.createElement("button");
+			editButton.textContent = "編集";
 
+			let editInput;
+
+			editButton.addEventListener("click", function() {
+
+				// 編集処理
+				if(editButton.textContent === "編集"){
+					editInput = document.createElement("input");
+					editInput.className = "task-text";
+					editInput.type = "text";
+					editInput.value = taskData.text;
+
+					taskText.replaceWith(editInput);					
+
+					editButton.textContent = "完了";
+
+				} else {
+					taskText.textContent = editInput.value;
+
+					editInput.replaceWith(taskText);					
+
+					editButton.textContent = "編集";
+
+					taskData.text = taskText.textContent;
+					localStorage.setItem("tasks", JSON.stringify(tasks));
+				}
+			}); 
+			
 			//checkbox、tasktext、deletebuttonをitemに追加
 			item.appendChild(checkBox);
 			item.appendChild(prioritySelect);
 			item.appendChild(taskText);
 //			taskText.style.marginRight = "100px";
+			item.appendChild(editButton);
+			editButton.style.marginRight = "20px";
 			item.appendChild(deleteButton);
 			
 			//itemをlistに追加
