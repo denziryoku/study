@@ -18,10 +18,20 @@
     <input type="text" id="taskInput">
     <button id="addButton">追加</button>
 	<br>
+	ステータス：
+	<select name="status" id="statusSelect">
+		<option value="">すべて</option>
+		<option>未着手</option>
+		<option>作業中</option>
+		<option>レビュー中</option>
+		<option>完了</option>
+	</select>
+	<br>
     <input type="text" id="searchInput">
 	<button id="searchButton">検索</button>
 	<br>
 	<button id="sortButton">優先度順</button>
+
 
     <ul id="taskList"></ul>
 
@@ -33,7 +43,7 @@
 		//配列の作成、localstorageにリストあるなら読み込み
 		const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
 
-		//itemにtaskを追加する関数
+		//1つのタスクを画面に表示する関数
 		function addTaskToScreen(taskData) {
 			//list形式のitemを作成
 	        const item = document.createElement("li");
@@ -119,7 +129,6 @@
 
 			//taskdataのpriorityをpriorityselectに入れる
 			prioritySelect.value = taskData.priority;
-
 			prioritySelect.addEventListener("change", function() {
 				taskData.priority = prioritySelect.value;
 
@@ -130,8 +139,8 @@
 	        const editButton = document.createElement("button");
 			editButton.textContent = "編集";
 
+			// 編集完了の状態変化
 			let editInput;
-
 			editButton.addEventListener("click", function() {
 
 				// 編集処理
@@ -156,10 +165,46 @@
 					localStorage.setItem("tasks", JSON.stringify(tasks));
 				}
 			}); 
-			
+
+			/*status*/
+			//statusの作成
+			const statusSelect = document.createElement("select");
+
+			//optionの作成
+			const completedOption = document.createElement("option");
+			completedOption.value = "完了";
+			completedOption.textContent = "完了";
+
+			const reviewOption = document.createElement("option");
+			reviewOption.value = "レビュー中";;
+			reviewOption.textContent = "レビュー中";
+
+			const inProgressOption = document.createElement("option");
+			inProgressOption.value = "作業中";
+			inProgressOption.textContent = "作業中";
+
+			const notStartedOption = document.createElement("option");
+			notStartedOption.value = "未着手";
+			notStartedOption.textContent = "未着手";
+
+			//statusselectにoptionの追加
+			statusSelect.appendChild(notStartedOption);
+			statusSelect.appendChild(inProgressOption);
+			statusSelect.appendChild(reviewOption);
+			statusSelect.appendChild(completedOption);
+
+			//taskdataのstatusをstatusselectに入れる
+			statusSelect.value = taskData.status;
+			statusSelect.addEventListener("change", function() {
+				taskData.status = statusSelect.value;
+
+				localStorage.setItem("tasks", JSON.stringify(tasks));
+			});
+
 			//checkbox、tasktext、deletebuttonをitemに追加
 			item.appendChild(checkBox);
 			item.appendChild(prioritySelect);
+			item.appendChild(statusSelect);
 			item.appendChild(taskText);
 //			taskText.style.marginRight = "100px";
 			item.appendChild(editButton);
@@ -192,7 +237,8 @@
 			const taskData = {
 				text: task,
 				completed: false,
-				priority: 1
+				priority: 1,
+				status: "未着手"
 			};
 
 			//配列への追加
@@ -239,7 +285,21 @@
 			list.innerHTML = "";
 
 			tasks.forEach(function(task) {
-				if(task.text.includes(searchInput.value)){
+				if(task.text.includes(searchInput.value) && (statusInput.value === "" || task.status === statusInput.value)){
+					// 描画
+					addTaskToScreen(task);
+				}
+			});
+	    });
+
+		//statusSelect変更時動作
+	    const statusInput = document.getElementById("statusSelect");
+	    statusInput.addEventListener("change", function() {
+			// 画面を一旦空にする
+			list.innerHTML = "";
+
+			tasks.forEach(function(task) {
+				if(statusInput.value === "" || task.status === statusInput.value){
 					// 描画
 					addTaskToScreen(task);
 				}
