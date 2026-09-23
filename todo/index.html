@@ -18,8 +18,15 @@
     <input type="text" id="taskInput">
     <button id="addButton">追加</button>
 	<br>
+	チェック：
+	<select id="completedFilter">
+		<option value="">すべて</option>
+		<option value="false">未完了</option>
+		<option value="true">完了</option>
+	</select>
+	<br>
 	ステータス：
-	<select name="status" id="statusSelect">
+	<select id="statusSelect">
 		<option value="">すべて</option>
 		<option>未着手</option>
 		<option>作業中</option>
@@ -42,6 +49,12 @@
 	    const list = document.getElementById("taskList");
 		//配列の作成、localstorageにリストあるなら読み込み
 		const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+
+		const sortButton = document.getElementById("sortButton");
+	    const searchInput = document.getElementById("searchInput");
+		const searchButton = document.getElementById("searchButton");
+	    const statusInput = document.getElementById("statusSelect");
+	    const completedFilter = document.getElementById("completedFilter");
 
 		//1つのタスクを画面に表示する関数
 		function addTaskToScreen(taskData) {
@@ -176,7 +189,7 @@
 			completedOption.textContent = "完了";
 
 			const reviewOption = document.createElement("option");
-			reviewOption.value = "レビュー中";;
+			reviewOption.value = "レビュー中";
 			reviewOption.textContent = "レビュー中";
 
 			const inProgressOption = document.createElement("option");
@@ -201,7 +214,7 @@
 				localStorage.setItem("tasks", JSON.stringify(tasks));
 			});
 
-			//checkbox、tasktext、deletebuttonをitemに追加
+			//各パーツをitemに追加
 			item.appendChild(checkBox);
 			item.appendChild(prioritySelect);
 			item.appendChild(statusSelect);
@@ -214,6 +227,19 @@
 			//itemをlistに追加
 	        list.appendChild(item);
 		
+		}
+
+		//描画のし直し、条件付き（condition）
+		function renderTasks(condition){
+			list.innerHTML = "";
+
+			tasks.forEach(function(task) {
+				if(condition(task)){
+					// 描画
+					addTaskToScreen(task);
+				}
+			});
+
 		}
 
 		// Enterキーを押したときの処理
@@ -260,7 +286,6 @@
 		});
 
 		/*優先順位並び替え*/
-		const sortButton = document.getElementById("sortButton");
 		sortButton.addEventListener("click", function() {
 			//データを並び直す処理
 			tasks.sort(function(a, b) {
@@ -278,32 +303,72 @@
 		});
 
 		//searchbuttonを押したときの処理
-	    const searchInput = document.getElementById("searchInput");
-		const searchButton = document.getElementById("searchButton");
 	    searchButton.addEventListener("click", function() {
+/*
 			// 画面を一旦空にする
 			list.innerHTML = "";
 
 			tasks.forEach(function(task) {
-				if(task.text.includes(searchInput.value) && (statusInput.value === "" || task.status === statusInput.value)){
+				if(task.text.includes(searchInput.value)
+				 && ((statusInput.value === "" || task.status === statusInput.value)
+				 && (task.completed === (completedFilter.value === "true") || completedFilter.value === ""))){
 					// 描画
 					addTaskToScreen(task);
 				}
 			});
+*/
+
+			renderTasks(function(task){
+				return task.text.includes(searchInput.value)
+				 && ((statusInput.value === "" || task.status === statusInput.value)
+				 && (task.completed === (completedFilter.value === "true") || completedFilter.value === ""));
+			});
+
+
+
 	    });
 
 		//statusSelect変更時動作
-	    const statusInput = document.getElementById("statusSelect");
 	    statusInput.addEventListener("change", function() {
+/*
 			// 画面を一旦空にする
 			list.innerHTML = "";
 
 			tasks.forEach(function(task) {
-				if(statusInput.value === "" || task.status === statusInput.value){
+				if((statusInput.value === "" || task.status === statusInput.value)
+				 && (task.completed === (completedFilter.value === "true") || completedFilter.value === "")){
 					// 描画
 					addTaskToScreen(task);
 				}
 			});
+*/
+			renderTasks(function(task){
+				return (statusInput.value === "" || task.status === statusInput.value)
+				 && (task.completed === (completedFilter.value === "true") || completedFilter.value === "");
+			});
+	    });
+
+		//completedFilter変更時動作
+	    completedFilter.addEventListener("change", function() {
+/*
+			// 画面を一旦空にする
+			list.innerHTML = "";
+
+			tasks.forEach(function(task) {
+				if((statusInput.value === "" || task.status === statusInput.value)
+				 && (task.completed === (completedFilter.value === "true") || completedFilter.value === "")){
+					// 描画
+					addTaskToScreen(task);
+				}
+			});
+*/
+
+			renderTasks(function(task){
+				return (statusInput.value === "" || task.status === statusInput.value)
+				 && (task.completed === (completedFilter.value === "true") || completedFilter.value === "");
+			});
+
+
 	    });
 
 
